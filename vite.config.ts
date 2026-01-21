@@ -8,15 +8,16 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
       manifest: {
-        name: 'TimesUp - Party Game',
-        short_name: 'TimesUp',
-        description: 'A fun party game for friends and family',
-        theme_color: '#6366f1',
-        background_color: '#0f172a',
+        name: "Vin's Up! - Le jeu de devinettes",
+        short_name: "Vin's Up!",
+        description: 'Le jeu de devinettes en équipe pour soirées entre amis',
+        theme_color: '#fdfbf7',
+        background_color: '#fdfbf7',
         display: 'standalone',
         orientation: 'portrait',
+        lang: 'fr',
         icons: [
           {
             src: 'pwa-192x192.png',
@@ -27,6 +28,12 @@ export default defineConfig({
             src: 'pwa-512x512.png',
             sizes: '512x512',
             type: 'image/png'
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
