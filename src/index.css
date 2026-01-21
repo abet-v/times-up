@@ -1,0 +1,153 @@
+@import "tailwindcss";
+/* Hand-drawn style fonts */
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand:wght@400&family=Kalam:wght@400;700&family=Nunito:wght@400;500;600;700;800&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Primary font for body text */
+  font-family: 'Patrick Hand', cursive;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  color: #2d2d2d;
+  background-color: #fdfbf7;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+
+  /* Hand-drawn design system colors */
+  --color-background: #fdfbf7;
+  --color-foreground: #2d2d2d;
+  --color-muted: #e5e0d8;
+  --color-accent: #ff4d4d;
+  --color-blue: #2d5da1;
+  --color-success: #22c55e;
+  --color-team-a: #2d5da1;
+  --color-team-b: #f59e0b;
+  --color-paper-lines: #e5e0d8;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--color-background);
+  /* Paper texture with dot pattern */
+  background-image: radial-gradient(#e5e0d8 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Hand-drawn title font - thick marker feel */
+.font-hand {
+  font-family: 'Patrick Hand', cursive;
+}
+
+/* Sketch font for headings - like Kalam */
+.font-sketch {
+  font-family: 'Kalam', cursive;
+}
+
+/* Sketchy border style */
+.sketch-border {
+  border: 3px solid var(--color-foreground);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 4px 4px 0 var(--color-foreground);
+}
+
+.sketch-border-light {
+  border: 2px dashed var(--color-muted);
+  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px;
+}
+
+/* Wobbly/hand-drawn effect for cards */
+.sketch-card {
+  background: white;
+  border: 3px solid var(--color-foreground);
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  box-shadow: 4px 4px 0 rgba(45, 45, 45, 0.15);
+  position: relative;
+}
+
+/* Custom scrollbar - subtle */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-foreground);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent);
+}
+
+/* Remove default button styles */
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+/* Remove input default styles */
+input {
+  font: inherit;
+}
+
+/* Safe area padding for mobile */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Underline sketch effect */
+.sketch-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.sketch-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  transform: rotate(-1deg);
+}
+
+/* Wobbly border radius utility */
+.wobbly {
+  border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+}
+
+.wobbly-alt {
+  border-radius: 15px 225px 15px 255px / 225px 15px 255px 15px;
+}
+
+/* Touch-friendly minimum sizes */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
