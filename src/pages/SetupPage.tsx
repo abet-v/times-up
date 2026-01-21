@@ -75,7 +75,7 @@ export function SetupPage() {
         className="text-center mb-6 pt-6 flex-shrink-0"
       >
         <h1 className="text-4xl font-bold font-sketch text-gray-800 mb-1">
-          Time's Up!
+          Vin's Up!
         </h1>
         <p className="text-gray-500 font-hand text-lg">
           Le jeu de devinettes en équipe

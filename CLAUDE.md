@@ -13,7 +13,7 @@ npm run preview   # Preview production build locally
 
 ## Architecture Overview
 
-TimesUp is a React party game (similar to the "Time's Up!" board game) built as a PWA. Players enter words, form teams, then compete through three phases: Free Description, One Word, and Mime.
+Vin's Up is a React party game (similar to the "Time's Up!" board game) built as a PWA. Players enter words, form teams, then compete through three phases: Free Description, One Word, and Mime.
 
 ### Tech Stack
 - React 19 with TypeScript

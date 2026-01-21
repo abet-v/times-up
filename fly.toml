@@ -1,7 +1,7 @@
 # fly.toml - Fly.io deployment configuration
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 
-app = "timesup-game"
+app = "vinsup"
 primary_region = "cdg"
 
 [build]

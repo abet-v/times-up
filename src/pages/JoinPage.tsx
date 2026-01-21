@@ -5,7 +5,7 @@ import { Wifi, WifiOff, Check, X, Loader2, Send, PartyPopper } from 'lucide-reac
 import Peer from 'peerjs';
 import type { DataConnection } from 'peerjs';
 import { Button, Input, Card } from '../components/ui';
-import type { P2PMessage } from '../lib/peer';
+import { peerServerConfig, type P2PMessage } from '../lib/peer';
 
 type ConnectionStatus = 'connecting' | 'connected' | 'entering' | 'done' | 'error';
 
@@ -29,7 +29,18 @@ export function JoinPage() {
       return;
     }
 
-    const peer = new Peer();
+    const peer = new Peer({
+      ...peerServerConfig,
+      debug: 2,
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
+        ],
+        iceCandidatePoolSize: 10,
+      },
+    });
     peerRef.current = peer;
 
     peer.on('open', () => {
@@ -204,7 +215,7 @@ export function JoinPage() {
             <span className="text-green-600 font-hand text-sm">Connecté</span>
           </div>
           <h1 className="text-4xl font-bold font-sketch text-[#2d2d2d]">
-            Time's Up!
+            Vin's Up!
           </h1>
         </motion.div>
 

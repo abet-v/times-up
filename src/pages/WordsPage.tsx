@@ -63,7 +63,19 @@ export function WordsPage() {
     peerInitializedRef.current = true;
 
     const peer = new Peer(hostPeerId, {
-      debug: import.meta.env.DEV ? 2 : 0,
+      host: 'vinsup-peer.fly.dev',
+      port: 443,
+      path: '/peerjs',
+      secure: true,
+      debug: 2,
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' },
+        ],
+        iceCandidatePoolSize: 10,
+      },
     });
 
     peerRef.current = peer;

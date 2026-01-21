@@ -6,11 +6,32 @@ export function generateShortId(): string {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 
+// PeerJS server configuration
+export const peerServerConfig = {
+  host: 'vinsup-peer.fly.dev',
+  port: 443,
+  path: '/peerjs',
+  secure: true,
+};
+
+// ICE server configuration for better connectivity
+export const iceServers = {
+  iceServers: [
+    // STUN servers (free, for direct connections)
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    { urls: 'stun:stun.stunprotocol.org:3478' },
+  ],
+  iceCandidatePoolSize: 10,
+};
+
 // Create a host peer with a specific ID
 export function createHostPeer(peerId: string): Promise<Peer> {
   return new Promise((resolve, reject) => {
     const peer = new Peer(peerId, {
-      debug: import.meta.env.DEV ? 2 : 0,
+      ...peerServerConfig,
+      debug: 2, // Enable debug to see what's happening
     });
 
     peer.on('open', () => {
@@ -26,7 +47,7 @@ export function createHostPeer(peerId: string): Promise<Peer> {
 // Connect to a host peer
 export function connectToHost(hostPeerId: string): Promise<{ peer: Peer; connection: DataConnection }> {
   return new Promise((resolve, reject) => {
-    const peer = new Peer();
+    const peer = new Peer({ ...peerServerConfig, debug: 2 });
 
     peer.on('open', () => {
       const connection = peer.connect(hostPeerId, {
