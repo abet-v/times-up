@@ -375,14 +375,49 @@ export function WordsPage() {
     <div className="min-h-[100dvh] p-4 flex flex-col relative">
       <BackButton className="absolute top-4 left-4 z-10" />
 
-      {/* Share button for multiplayer */}
+      {/* Share button for multiplayer with decorative arrow */}
       {isMultiplayerHost && hostPeerId && (
-        <button
-          onClick={() => setShowShare(true)}
-          className="absolute top-4 right-4 z-10 p-2 bg-white border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
-        >
-          <QrCode className="w-5 h-5 text-gray-600" />
-        </button>
+        <>
+          <button
+            onClick={() => setShowShare(true)}
+            className="absolute top-4 right-4 z-10 p-2 bg-white border-2 border-gray-300 rounded-lg hover:border-gray-400 transition-colors"
+          >
+            <QrCode className="w-5 h-5 text-gray-600" />
+          </button>
+          {/* Decorative looping arrow pointing to QR button */}
+          <div className="absolute top-4 right-14 z-10 pointer-events-none flex flex-col items-end">
+            <svg width="55" height="50" viewBox="0 0 55 50" fill="none">
+              {/* Curly loop arrow: starts bottom-left, loops, ends pointing right toward QR */}
+              <path
+                d="M5 45
+                   C 5 30, 15 20, 25 28
+                   C 32 34, 24 40, 18 33
+                   C 14 28, 22 22, 32 20
+                   C 42 18, 48 14, 52 10"
+                stroke="#9ca3af"
+                strokeWidth="2"
+                strokeDasharray="4 3"
+                strokeLinecap="round"
+                fill="none"
+              />
+              {/* Arrow head */}
+              <path
+                d="M48 6 L 54 9 L 50 15"
+                stroke="#9ca3af"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
+            </svg>
+            <span
+              className="text-xs font-hand text-gray-500 whitespace-nowrap -mt-2 mr-1"
+              style={{ transform: 'rotate(-8deg)' }}
+            >
+              Invite tes amis !
+            </span>
+          </div>
+        </>
       )}
 
       {/* Header */}
