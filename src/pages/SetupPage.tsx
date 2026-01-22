@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Play, Settings, Clock, FileText, RotateCcw } from 'lucide-react';
+import { Play, Settings, Clock, FileText, RotateCcw, SkipForward } from 'lucide-react';
 import { Button, Input, Card, Modal } from '../components/ui';
 import { useGameStore } from '../store/gameStore';
 import { generateShortId } from '../lib/peer';
+import type { PhaseSettingsMap, TimePenalty } from '../types/game';
 
 export function SetupPage() {
   const navigate = useNavigate();
@@ -14,6 +15,11 @@ export function SetupPage() {
   const [showSettings, setShowSettings] = useState(false);
   const [wordsPerPlayer, setWordsPerPlayer] = useState(5);
   const [roundDuration, setRoundDuration] = useState(60);
+  const [phaseSettings, setPhaseSettings] = useState<PhaseSettingsMap>({
+    1: { enabled: false, timePenalty: 0 },
+    2: { enabled: true, timePenalty: 3 },
+    3: { enabled: true, timePenalty: 3 }
+  });
   const [error, setError] = useState('');
 
   // If there's already a session, redirect based on status
@@ -57,7 +63,7 @@ export function SetupPage() {
       return;
     }
 
-    createSession(hostName.trim(), { wordsPerPlayer, roundDuration });
+    createSession(hostName.trim(), { wordsPerPlayer, roundDuration, phaseSettings });
 
     // Always enable multiplayer so QR code sharing is available
     const peerId = generateShortId();
@@ -228,6 +234,100 @@ export function SetupPage() {
                   {n}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Phase Pass Settings */}
+          <div>
+            <label className="block text-lg font-bold text-[#2d2d2d] mb-3 font-hand flex items-center gap-2">
+              <SkipForward className="w-5 h-5" />
+              Règles de Pass
+            </label>
+            <div className="space-y-3">
+              {([1, 2, 3] as const).map((phase) => {
+                const phaseNames = {
+                  1: 'Description',
+                  2: 'Un mot',
+                  3: 'Mime'
+                };
+                const settings = phaseSettings[phase];
+                return (
+                  <div
+                    key={phase}
+                    className="p-3 border-2 border-dashed border-[#2d2d2d]/30 bg-[#fdfbf7]"
+                    style={{ borderRadius: '15px 30px 15px 30px / 30px 15px 30px 15px' }}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-hand font-bold text-[#2d2d2d]">
+                        Phase {phase}: {phaseNames[phase]}
+                      </span>
+                      <button
+                        onClick={() => setPhaseSettings(prev => ({
+                          ...prev,
+                          [phase]: { ...prev[phase], enabled: !prev[phase].enabled }
+                        }))}
+                        className={`
+                          px-3 py-1 border-2 font-hand text-sm font-bold
+                          transition-all duration-100
+                        `}
+                        style={{
+                          borderRadius: '20px 10px 20px 10px / 10px 20px 10px 20px',
+                          ...(settings.enabled
+                            ? {
+                                backgroundColor: '#22c55e',
+                                color: '#ffffff',
+                                borderColor: '#2d2d2d',
+                              }
+                            : {
+                                backgroundColor: '#e5e0d8',
+                                color: '#2d2d2d',
+                                borderColor: '#2d2d2d',
+                              }),
+                        }}
+                      >
+                        {settings.enabled ? 'Oui' : 'Non'}
+                      </button>
+                    </div>
+                    {settings.enabled && (
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-sm text-[#2d2d2d]/70 font-hand">Pénalité:</span>
+                        {([0, 3, 5] as TimePenalty[]).map((penalty) => (
+                          <button
+                            key={penalty}
+                            onClick={() => setPhaseSettings(prev => ({
+                              ...prev,
+                              [phase]: { ...prev[phase], timePenalty: penalty }
+                            }))}
+                            className={`
+                              w-10 h-8 border-2 font-bold text-sm font-hand
+                              transition-all duration-100
+                              hover:rotate-2
+                            `}
+                            style={{
+                              borderRadius: '10px 20px 10px 20px / 20px 10px 20px 10px',
+                              ...(settings.timePenalty === penalty
+                                ? {
+                                    backgroundColor: '#ff4d4d',
+                                    color: '#ffffff',
+                                    borderColor: '#2d2d2d',
+                                    boxShadow: '2px 2px 0px 0px #2d2d2d',
+                                  }
+                                : {
+                                    backgroundColor: '#ffffff',
+                                    color: '#2d2d2d',
+                                    borderColor: '#2d2d2d',
+                                    boxShadow: '1px 1px 0px 0px rgba(45, 45, 45, 0.15)',
+                                  }),
+                            }}
+                          >
+                            {penalty}s
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 

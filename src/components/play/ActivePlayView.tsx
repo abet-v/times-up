@@ -11,6 +11,8 @@ interface ActivePlayViewProps {
   onSkip: () => void;
   timerRunning: boolean;
   onTimerComplete: () => void;
+  canSkip: boolean;
+  skipPenalty: number;
 }
 
 export function ActivePlayView({
@@ -19,7 +21,9 @@ export function ActivePlayView({
   onCorrect,
   onSkip,
   timerRunning,
-  onTimerComplete
+  onTimerComplete,
+  canSkip,
+  skipPenalty
 }: ActivePlayViewProps) {
   const isTeamA = session.currentTeam === 'A';
   const remainingCount = session.remainingWords.length;
@@ -36,6 +40,7 @@ export function ActivePlayView({
         >
           <Timer
             duration={session.settings.roundDuration}
+            penalty={session.currentTurn?.accumulatedPenalty ?? 0}
             isRunning={timerRunning}
             onComplete={onTimerComplete}
             size="lg"
@@ -69,15 +74,17 @@ export function ActivePlayView({
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-3 flex-shrink-0">
-          <Button
-            size="lg"
-            variant="secondary"
-            onClick={onSkip}
-            icon={<SkipForward className="w-5 h-5" />}
-          >
-            Passer
-          </Button>
+        <div className={`grid gap-3 mb-3 flex-shrink-0 ${canSkip ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {canSkip && (
+            <Button
+              size="lg"
+              variant="secondary"
+              onClick={onSkip}
+              icon={<SkipForward className="w-5 h-5" />}
+            >
+              Passer {skipPenalty > 0 && <span className="text-sm opacity-70 ml-1">(-{skipPenalty}s)</span>}
+            </Button>
+          )}
           <Button
             size="lg"
             variant="success"

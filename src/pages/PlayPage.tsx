@@ -28,7 +28,9 @@ export function PlayPage() {
     skipWord,
     endTurn,
     startTurn,
-    nextPhase
+    nextPhase,
+    canSkipCurrentPhase,
+    getCurrentPhasePenalty
   } = useGameStore();
 
   const handleCountdownComplete = useCallback(() => {
@@ -124,6 +126,8 @@ export function PlayPage() {
           onSkip={handleSkip}
           timerRunning={true}
           onTimerComplete={handleTimerComplete}
+          canSkip={canSkipCurrentPhase()}
+          skipPenalty={getCurrentPhasePenalty()}
         />
       )}
 

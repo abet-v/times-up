@@ -57,11 +57,18 @@ interface GameStore {
   getTeamPlayers: (team: Team) => Player[];
   getPlayer: (playerId: string) => Player | null;
   getRemotePlayer: (peerId: string) => Player | null;
+  canSkipCurrentPhase: () => boolean;
+  getCurrentPhasePenalty: () => number;
 }
 
 const defaultSettings: GameSettings = {
   wordsPerPlayer: 5,
-  roundDuration: 60
+  roundDuration: 60,
+  phaseSettings: {
+    1: { enabled: false, timePenalty: 0 },
+    2: { enabled: true, timePenalty: 3 },
+    3: { enabled: true, timePenalty: 3 }
+  }
 };
 
 export const useGameStore = create<GameStore>()(
@@ -316,7 +323,8 @@ export const useGameStore = create<GameStore>()(
               activePlayerId: activePlayer?.id || '',
               startTime: Date.now(),
               correctCount: 0,
-              skippedWords: []
+              skippedWords: [],
+              accumulatedPenalty: 0
             },
             updatedAt: Date.now()
           }
@@ -352,6 +360,12 @@ export const useGameStore = create<GameStore>()(
         const { session } = get();
         if (!session || !session.currentTurn || session.remainingWords.length === 0) return null;
 
+        if (session.phase === 0) return null;
+        const phase = session.phase as 1 | 2 | 3;
+
+        const phaseSettings = session.settings.phaseSettings[phase];
+        if (!phaseSettings.enabled) return null; // Pass disabled for this phase
+
         const [currentWord, ...rest] = session.remainingWords;
         const newRemaining = [...rest, currentWord];
 
@@ -361,7 +375,8 @@ export const useGameStore = create<GameStore>()(
             remainingWords: newRemaining,
             currentTurn: {
               ...session.currentTurn,
-              skippedWords: [...session.currentTurn.skippedWords, currentWord]
+              skippedWords: [...session.currentTurn.skippedWords, currentWord],
+              accumulatedPenalty: session.currentTurn.accumulatedPenalty + phaseSettings.timePenalty
             },
             updatedAt: Date.now()
           }
@@ -501,6 +516,20 @@ export const useGameStore = create<GameStore>()(
         const { session } = get();
         if (!session) return null;
         return session.players.find(p => p.peerId === peerId) || null;
+      },
+
+      canSkipCurrentPhase: () => {
+        const { session } = get();
+        if (!session || session.phase === 0) return false;
+        const phase = session.phase as 1 | 2 | 3;
+        return session.settings.phaseSettings[phase].enabled;
+      },
+
+      getCurrentPhasePenalty: () => {
+        const { session } = get();
+        if (!session || session.phase === 0) return 0;
+        const phase = session.phase as 1 | 2 | 3;
+        return session.settings.phaseSettings[phase].timePenalty;
       },
 
       // Multiplayer P2P actions

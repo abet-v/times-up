@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { formatTime } from '../../lib/utils';
 
 interface TimerProps {
   duration: number;
+  penalty?: number;
   onComplete: () => void;
   isRunning: boolean;
   size?: 'sm' | 'md' | 'lg';
@@ -15,17 +16,28 @@ const sizes = {
   lg: 'w-32 h-32 text-4xl'
 };
 
-export function Timer({ duration, onComplete, isRunning, size = 'md' }: TimerProps) {
+export function Timer({ duration, penalty = 0, onComplete, isRunning, size = 'md' }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState(duration);
   const [hasCompleted, setHasCompleted] = useState(false);
+  const prevPenaltyRef = useRef(0);
 
   // Reset timer when isRunning changes from false to true
   useEffect(() => {
     if (isRunning) {
       setTimeLeft(duration);
       setHasCompleted(false);
+      prevPenaltyRef.current = 0;
     }
   }, [isRunning, duration]);
+
+  // Handle penalty deductions
+  useEffect(() => {
+    if (isRunning && penalty > prevPenaltyRef.current) {
+      const diff = penalty - prevPenaltyRef.current;
+      setTimeLeft(prev => Math.max(0, prev - diff));
+    }
+    prevPenaltyRef.current = penalty;
+  }, [penalty, isRunning]);
 
   useEffect(() => {
     if (!isRunning || hasCompleted) return;

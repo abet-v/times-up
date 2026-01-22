@@ -14,9 +14,21 @@ export interface Player {
   peerId?: string; // PeerJS connection ID for remote players
 }
 
+export type TimePenalty = 0 | 3 | 5;
+
+export interface PhasePassSettings {
+  enabled: boolean;
+  timePenalty: TimePenalty;
+}
+
+export type PhaseSettingsMap = {
+  [K in 1 | 2 | 3]: PhasePassSettings;
+};
+
 export interface GameSettings {
   wordsPerPlayer: number;
   roundDuration: number; // seconds
+  phaseSettings: PhaseSettingsMap;
 }
 
 export interface Turn {
@@ -25,6 +37,7 @@ export interface Turn {
   startTime: number;
   correctCount: number;
   skippedWords: string[];
+  accumulatedPenalty: number;
 }
 
 export interface PhaseScore {
