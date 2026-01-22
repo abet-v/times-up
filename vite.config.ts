@@ -12,7 +12,7 @@ export default defineConfig({
       manifest: {
         name: "Vin's Up! - Le jeu de devinettes",
         short_name: "Vin's Up!",
-        description: 'Le jeu de devinettes en équipe pour soirées entre amis',
+        description: "Le Time's up avec des mots custom",
         theme_color: '#fdfbf7',
         background_color: '#fdfbf7',
         display: 'standalone',

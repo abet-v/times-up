@@ -78,7 +78,7 @@ export function SetupPage() {
           Vin's Up!
         </h1>
         <p className="text-gray-500 font-hand text-lg">
-          Le jeu de devinettes en équipe
+          Le Time's up avec des mots custom
         </p>
       </motion.div>
 

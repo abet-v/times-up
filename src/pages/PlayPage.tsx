@@ -64,14 +64,16 @@ export function PlayPage() {
   }, [endTurn]);
 
   useEffect(() => {
-    if (!session || session.status !== 'playing') {
+    // Only redirect to home if there's no session at all
+    // Don't redirect during normal game flow transitions (phase-summary, game-over)
+    if (!session) {
       navigate('/');
     }
   }, [session, navigate]);
 
   // Check if all words are guessed after each render
   useEffect(() => {
-    if (session && session.remainingWords.length === 0 && subPhase === 'playing') {
+    if (session && session.status === 'playing' && session.remainingWords.length === 0 && subPhase === 'playing') {
       setTurnPointsScored(pointsRef.current);
       nextPhase();
       navigate('/phase-summary');
