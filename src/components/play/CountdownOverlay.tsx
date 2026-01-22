@@ -26,6 +26,12 @@ const numberVariants = {
 export function CountdownOverlay({ onComplete }: CountdownOverlayProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Play Mario Kart start sound on mount
+  useEffect(() => {
+    const audio = new Audio('https://www.myinstants.com/media/sounds/mario-kart-smash-bros-start.mp3');
+    audio.play().catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (currentIndex >= countdownSequence.length) {
       onComplete();
