@@ -1,3 +1,4 @@
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, SkipForward } from 'lucide-react';
 import { Button, Card, Timer } from '../ui';
@@ -25,6 +26,24 @@ export function ActivePlayView({
   canSkip,
   skipPenalty
 }: ActivePlayViewProps) {
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Reset processing state when word changes
+  useEffect(() => {
+    setIsProcessing(false);
+  }, [currentWord]);
+
+  const handleCorrect = useCallback(() => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    onCorrect();
+  }, [isProcessing, onCorrect]);
+
+  const handleSkip = useCallback(() => {
+    if (isProcessing) return;
+    setIsProcessing(true);
+    onSkip();
+  }, [isProcessing, onSkip]);
   const isTeamA = session.currentTeam === 'A';
   const remainingCount = session.remainingWords.length;
   const currentScore = isTeamA ? session.teamAScore : session.teamBScore;
@@ -79,7 +98,8 @@ export function ActivePlayView({
             <Button
               size="lg"
               variant="secondary"
-              onClick={onSkip}
+              onClick={handleSkip}
+              disabled={isProcessing}
               icon={<SkipForward className="w-5 h-5" />}
             >
               Passer {skipPenalty > 0 && <span className="text-sm opacity-70 ml-1">(-{skipPenalty}s)</span>}
@@ -88,7 +108,8 @@ export function ActivePlayView({
           <Button
             size="lg"
             variant="success"
-            onClick={onCorrect}
+            onClick={handleCorrect}
+            disabled={isProcessing}
             icon={<Check className="w-5 h-5" />}
           >
             Trouvé !

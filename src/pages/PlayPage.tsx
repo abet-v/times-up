@@ -64,8 +64,15 @@ export function PlayPage() {
   }, []);
 
   const handleScoreTransferComplete = useCallback(() => {
-    setSubPhase('pre-turn');
-  }, []);
+    // Check if phase is complete (all words guessed)
+    const currentSession = useGameStore.getState().session;
+    if (currentSession && currentSession.remainingWords.length === 0) {
+      nextPhase();
+      navigate('/phase-summary');
+    } else {
+      setSubPhase('pre-turn');
+    }
+  }, [nextPhase, navigate]);
 
   const handleCloseReview = useCallback(() => {
     setShowReviewModal(false);
@@ -85,13 +92,13 @@ export function PlayPage() {
     }
   }, [session, navigate]);
 
-  // Check if all words are guessed after each render
+  // Check if all words are guessed - go to turn-end for review opportunity
   useEffect(() => {
     if (session && session.status === 'playing' && session.remainingWords.length === 0 && subPhase === 'playing') {
-      nextPhase();
-      navigate('/phase-summary');
+      endTurn(); // Save currentTurn to lastTurn for review
+      setSubPhase('turn-end');
     }
-  }, [session, subPhase, nextPhase, navigate]);
+  }, [session, subPhase, endTurn]);
 
   if (!session || session.status !== 'playing') {
     return null;

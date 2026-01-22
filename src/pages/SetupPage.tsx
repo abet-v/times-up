@@ -7,9 +7,16 @@ import { useGameStore } from '../store/gameStore';
 import { generateShortId } from '../lib/peer';
 import type { PhaseSettingsMap, TimePenalty } from '../types/game';
 
+const DEBUG_PLAYERS = [
+  { name: 'Vincent', words: ['Croissant', 'Eiffel', 'Baguette'] },
+  { name: 'Thomas', words: ['Soleil', 'Plage', 'Vacances'] },
+  { name: 'Paul', words: ['Guitare', 'Musique', 'Concert'] },
+  { name: 'Victor', words: ['Football', 'Champion', 'Victoire'] }
+];
+
 export function SetupPage() {
   const navigate = useNavigate();
-  const { createSession, session, resetGame, enableMultiplayer } = useGameStore();
+  const { createSession, session, resetGame, enableMultiplayer, addPlayer, addWord, finalizePlayerWords } = useGameStore();
 
   const [hostName, setHostName] = useState('');
   const [showSettings, setShowSettings] = useState(false);
@@ -21,6 +28,7 @@ export function SetupPage() {
     3: { enabled: true, timePenalty: 3 }
   });
   const [error, setError] = useState('');
+  const [debugClickCount, setDebugClickCount] = useState(0);
 
   // If there's already a session, redirect based on status
   useEffect(() => {
@@ -70,6 +78,50 @@ export function SetupPage() {
     enableMultiplayer(peerId);
 
     navigate('/words');
+  };
+
+  const handleDebugClick = () => {
+    const newCount = debugClickCount + 1;
+    setDebugClickCount(newCount);
+
+    if (newCount >= 5) {
+      setDebugClickCount(0);
+
+      // Create session with debug settings (5 sec penalty for all phases)
+      const debugSettings = {
+        wordsPerPlayer: 3,
+        roundDuration: 60,
+        phaseSettings: {
+          1: { enabled: true, timePenalty: 5 as TimePenalty },
+          2: { enabled: true, timePenalty: 5 as TimePenalty },
+          3: { enabled: true, timePenalty: 5 as TimePenalty }
+        }
+      };
+
+      // Create session with first player as host
+      createSession(DEBUG_PLAYERS[0].name, debugSettings);
+
+      // Enable multiplayer
+      const peerId = generateShortId();
+      enableMultiplayer(peerId);
+
+      // Add words for host
+      const store = useGameStore.getState();
+      const hostId = store.session?.players[0]?.id;
+      if (hostId) {
+        DEBUG_PLAYERS[0].words.forEach(word => addWord(hostId, word));
+        finalizePlayerWords(hostId);
+      }
+
+      // Add other players with their words
+      DEBUG_PLAYERS.slice(1).forEach(playerData => {
+        const player = addPlayer(playerData.name);
+        playerData.words.forEach(word => addWord(player.id, word));
+        finalizePlayerWords(player.id);
+      });
+
+      navigate('/words');
+    }
   };
 
   return (
@@ -153,6 +205,16 @@ export function SetupPage() {
           </div>
         </Card>
       </motion.div>
+
+      {/* Footer */}
+      <div className="flex-shrink-0 pb-4 pt-2">
+        <p
+          className="text-center text-xs text-gray-400 font-hand cursor-default select-none"
+          onClick={handleDebugClick}
+        >
+          by Vincent ABET
+        </p>
+      </div>
 
       {/* Settings Modal */}
       <Modal
