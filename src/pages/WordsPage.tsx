@@ -34,6 +34,9 @@ export function WordsPage() {
   const [error, setError] = useState('');
   const [showShare, setShowShare] = useState(false);
 
+  // Input ref for auto-focus
+  const wordInputRef = useRef<HTMLInputElement>(null);
+
   // P2P state
   const peerRef = useRef<Peer | null>(null);
   const connectionsRef = useRef<Map<string, DataConnection>>(new Map());
@@ -50,6 +53,16 @@ export function WordsPage() {
       setShowAddPlayer(true);
     }
   }, [session, currentPlayerId]);
+
+  // Auto-focus input when player starts entering words
+  useEffect(() => {
+    if (currentPlayerId && wordInputRef.current) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        wordInputRef.current?.focus();
+      }, 100);
+    }
+  }, [currentPlayerId]);
 
   // Initialize P2P host if multiplayer mode
   useEffect(() => {
@@ -177,6 +190,11 @@ export function WordsPage() {
     addWord(currentPlayerId, newWord.trim());
     setNewWord('');
     setError('');
+
+    // Re-focus input for fast consecutive entries on mobile
+    setTimeout(() => {
+      wordInputRef.current?.focus();
+    }, 10);
   };
 
   const handleRemoveWord = (word: string) => {
@@ -407,34 +425,41 @@ export function WordsPage() {
         </div>
       </div>
 
-      {/* Word Input */}
-      <div className="max-w-md mx-auto w-full mb-4">
-        <div className="flex gap-2">
-          <Input
-            placeholder="Entre un mot..."
-            value={newWord}
-            onChange={(e) => {
-              setNewWord(e.target.value);
-              setError('');
-            }}
-            onKeyDown={(e) => e.key === 'Enter' && handleAddWord()}
-            error={error}
-            disabled={currentWords.length >= wordsPerPlayer}
-          />
-          <Button
-            onClick={handleAddWord}
-            disabled={!newWord.trim() || currentWords.length >= wordsPerPlayer}
-            size="lg"
-            variant="danger"
-            className="shrink-0 text-2xl !px-8"
-          >
-            +
-          </Button>
+      {/* Word Input - Sticky so it stays visible with keyboard */}
+      <div className="sticky top-0 z-20 bg-[#fdfbf7] pb-3 -mx-4 px-4">
+        <div className="max-w-md mx-auto w-full">
+          <div className="flex gap-2">
+            <Input
+              ref={wordInputRef}
+              placeholder="Entre un mot..."
+              value={newWord}
+              onChange={(e) => {
+                setNewWord(e.target.value);
+                setError('');
+              }}
+              onKeyDown={(e) => e.key === 'Enter' && handleAddWord()}
+              error={error}
+              disabled={currentWords.length >= wordsPerPlayer}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="words"
+              enterKeyHint="send"
+            />
+            <Button
+              onClick={handleAddWord}
+              disabled={!newWord.trim() || currentWords.length >= wordsPerPlayer}
+              size="lg"
+              variant="danger"
+              className="shrink-0 text-2xl !px-8"
+            >
+              +
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Words List */}
-      <div className="max-w-md mx-auto w-full flex-1">
+      {/* Words List - Scrollable */}
+      <div className="max-w-md mx-auto w-full flex-1 overflow-y-auto">
         <AnimatePresence mode="popLayout">
           {currentWords.map((word, index) => (
             <motion.div
