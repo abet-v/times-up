@@ -50,6 +50,10 @@ export function GameOverPage() {
   const winner = totalTeamA > totalTeamB ? 'A' : totalTeamB > totalTeamA ? 'B' : null;
 
   const handlePlayAgain = () => {
+    // Play the legendary sound
+    const audio = new Audio('https://www.myinstants.com//media/sounds/laugh_christophe_lambert_mk.mp3');
+    audio.play().catch(() => {}); // Ignore errors if autoplay blocked
+
     resetGame();
     navigate('/');
   };
