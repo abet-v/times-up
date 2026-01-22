@@ -132,7 +132,8 @@ export function SetupPage() {
         animate={{ y: 0, opacity: 1 }}
         className="text-center mb-6 pt-6 flex-shrink-0"
       >
-        <h1 className="text-4xl font-bold font-sketch text-gray-800 mb-1">
+        <h1 className="text-4xl font-bold font-sketch text-gray-800 mb-1 flex items-center justify-center gap-3">
+          <img src="/pwa-192x192.png" alt="Vin's Up" className="w-12 h-12" />
           Vin's Up!
         </h1>
         <p className="text-gray-500 font-hand text-lg">

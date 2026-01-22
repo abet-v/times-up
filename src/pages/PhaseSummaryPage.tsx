@@ -102,7 +102,7 @@ export function PhaseSummaryPage() {
             </motion.p>
 
             {/* Team Podiums */}
-            <div className="flex items-end justify-center gap-8 mb-6" style={{ height: '200px' }}>
+            <div className="flex items-end justify-center gap-6 mb-6" style={{ height: '220px' }}>
               {/* Team A Podium */}
               <div className="flex flex-col items-center">
                 <motion.div
@@ -114,23 +114,22 @@ export function PhaseSummaryPage() {
                   {displayedScoreA}
                 </motion.div>
                 <motion.div
-                  animate={{ height: maxScore > 0 ? (displayedScoreA / maxScore) * 150 + 20 : 20 }}
+                  animate={{ height: maxScore > 0 ? (displayedScoreA / maxScore) * 130 + 30 : 30 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  className="w-24 bg-gradient-to-t from-blue-600 to-blue-400 border-3 border-blue-700 flex items-end justify-center pb-2"
+                  className="w-20 bg-blue-100 border-[3px] border-[#2d2d2d]"
                   style={{
-                    borderRadius: '12px 12px 0 0',
-                    boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
-                    minHeight: '20px'
+                    borderRadius: '15px 50px 0 0 / 50px 15px 0 0',
+                    boxShadow: '4px 4px 0px 0px #2d2d2d',
+                    minHeight: '30px'
                   }}
-                >
-                  <span className="text-white font-hand text-sm font-bold">
-                    {getTeamName('A')}
-                  </span>
-                </motion.div>
+                />
+                <span className="font-hand text-sm font-bold text-blue-600 mt-2">
+                  {getTeamName('A')}
+                </span>
               </div>
 
               {/* VS */}
-              <div className="flex flex-col items-center justify-end pb-4">
+              <div className="flex flex-col items-center justify-end pb-8">
                 <span className="text-2xl font-sketch text-gray-400">VS</span>
               </div>
 
@@ -145,19 +144,18 @@ export function PhaseSummaryPage() {
                   {displayedScoreB}
                 </motion.div>
                 <motion.div
-                  animate={{ height: maxScore > 0 ? (displayedScoreB / maxScore) * 150 + 20 : 20 }}
+                  animate={{ height: maxScore > 0 ? (displayedScoreB / maxScore) * 130 + 30 : 30 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                  className="w-24 bg-gradient-to-t from-amber-600 to-amber-400 border-3 border-amber-700 flex items-end justify-center pb-2"
+                  className="w-20 bg-amber-100 border-[3px] border-[#2d2d2d]"
                   style={{
-                    borderRadius: '12px 12px 0 0',
-                    boxShadow: '4px 4px 0 rgba(0,0,0,0.2)',
-                    minHeight: '20px'
+                    borderRadius: '50px 15px 0 0 / 15px 50px 0 0',
+                    boxShadow: '4px 4px 0px 0px #2d2d2d',
+                    minHeight: '30px'
                   }}
-                >
-                  <span className="text-white font-hand text-sm font-bold">
-                    {getTeamName('B')}
-                  </span>
-                </motion.div>
+                />
+                <span className="font-hand text-sm font-bold text-amber-600 mt-2">
+                  {getTeamName('B')}
+                </span>
               </div>
             </div>
 
