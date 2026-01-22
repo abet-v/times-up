@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
@@ -7,17 +7,18 @@ import {
   CountdownOverlay,
   TurnEndOverlay,
   PreTurnView,
-  ActivePlayView
+  ActivePlayView,
+  TurnReviewModal,
+  ScoreTransferOverlay
 } from '../components/play';
 import { useGameStore } from '../store/gameStore';
 
-type PlaySubPhase = 'pre-turn' | 'countdown' | 'playing' | 'turn-end';
+type PlaySubPhase = 'pre-turn' | 'countdown' | 'playing' | 'turn-end' | 'score-transfer';
 
 export function PlayPage() {
   const navigate = useNavigate();
   const [subPhase, setSubPhase] = useState<PlaySubPhase>('pre-turn');
-  const [turnPointsScored, setTurnPointsScored] = useState(0);
-  const pointsRef = useRef(0);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   const {
     session,
@@ -30,13 +31,13 @@ export function PlayPage() {
     startTurn,
     nextPhase,
     canSkipCurrentPhase,
-    getCurrentPhasePenalty
+    getCurrentPhasePenalty,
+    reviewUncorrectWord,
+    reviewCorrectWord
   } = useGameStore();
 
   const handleCountdownComplete = useCallback(() => {
     startTurn();
-    pointsRef.current = 0;
-    setTurnPointsScored(0);
     setSubPhase('playing');
   }, [startTurn]);
 
@@ -46,8 +47,6 @@ export function PlayPage() {
       spread: 60,
       origin: { y: 0.8 }
     });
-
-    pointsRef.current += 1;
     markCorrect();
   }, [markCorrect]);
 
@@ -56,14 +55,27 @@ export function PlayPage() {
   }, [skipWord]);
 
   const handleTimerComplete = useCallback(() => {
-    setTurnPointsScored(pointsRef.current);
+    endTurn(); // Save currentTurn to lastTurn for review
     setSubPhase('turn-end');
-  }, []);
+  }, [endTurn]);
 
   const handleTurnEndComplete = useCallback(() => {
-    endTurn();
+    setSubPhase('score-transfer');
+  }, []);
+
+  const handleScoreTransferComplete = useCallback(() => {
     setSubPhase('pre-turn');
-  }, [endTurn]);
+  }, []);
+
+  const handleCloseReview = useCallback(() => {
+    setShowReviewModal(false);
+    // Check if all words have been found after review corrections
+    const currentSession = useGameStore.getState().session;
+    if (currentSession && currentSession.remainingWords.length === 0) {
+      nextPhase();
+      navigate('/phase-summary');
+    }
+  }, [nextPhase, navigate]);
 
   useEffect(() => {
     // Only redirect to home if there's no session at all
@@ -76,7 +88,6 @@ export function PlayPage() {
   // Check if all words are guessed after each render
   useEffect(() => {
     if (session && session.status === 'playing' && session.remainingWords.length === 0 && subPhase === 'playing') {
-      setTurnPointsScored(pointsRef.current);
       nextPhase();
       navigate('/phase-summary');
     }
@@ -132,13 +143,39 @@ export function PlayPage() {
       )}
 
       <AnimatePresence>
-        {subPhase === 'turn-end' && (
-          <TurnEndOverlay
-            key="turn-end"
-            pointsScored={turnPointsScored}
-            team={session.currentTeam}
-            nextPlayerName={nextPlayer?.name}
-            onComplete={handleTurnEndComplete}
+        {subPhase === 'turn-end' && session.lastTurn && (
+          <>
+            <TurnEndOverlay
+              key="turn-end"
+              lastTurn={session.lastTurn}
+              nextPlayerName={nextPlayer?.name}
+              onComplete={handleTurnEndComplete}
+              canReview={session.lastTurn.foundWords.length > 0 || session.lastTurn.skippedWords.length > 0}
+              onOpenReview={() => setShowReviewModal(true)}
+            />
+            <TurnReviewModal
+              isOpen={showReviewModal}
+              lastTurn={session.lastTurn}
+              onUncorrect={reviewUncorrectWord}
+              onCorrect={reviewCorrectWord}
+              onClose={handleCloseReview}
+            />
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {subPhase === 'score-transfer' && session.lastTurn && (
+          <ScoreTransferOverlay
+            key="score-transfer"
+            team={session.lastTurn.teamId}
+            pointsToAdd={session.lastTurn.correctCount}
+            startingScore={
+              session.lastTurn.teamId === 'A'
+                ? session.teamAScore - session.lastTurn.correctCount
+                : session.teamBScore - session.lastTurn.correctCount
+            }
+            onComplete={handleScoreTransferComplete}
           />
         )}
       </AnimatePresence>

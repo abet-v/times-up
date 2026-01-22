@@ -37,6 +37,7 @@ export interface Turn {
   startTime: number;
   correctCount: number;
   skippedWords: string[];
+  foundWords: string[];
   accumulatedPenalty: number;
 }
 
@@ -58,6 +59,7 @@ export interface GameSession {
   remainingWords: string[];
   guessedWords: string[];
   currentTurn?: Turn;
+  lastTurn?: Turn;
   scores: PhaseScore[];
   teamAPlayerIndex: number;
   teamBPlayerIndex: number;

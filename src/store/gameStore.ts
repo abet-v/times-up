@@ -42,6 +42,10 @@ interface GameStore {
   endGame: () => void;
   resetGame: () => void;
 
+  // Turn review actions
+  reviewUncorrectWord: (word: string) => void;
+  reviewCorrectWord: (word: string) => void;
+
   // Multiplayer P2P actions
   enableMultiplayer: (peerId: string) => void;
   disableMultiplayer: () => void;
@@ -324,6 +328,7 @@ export const useGameStore = create<GameStore>()(
               startTime: Date.now(),
               correctCount: 0,
               skippedWords: [],
+              foundWords: [],
               accumulatedPenalty: 0
             },
             updatedAt: Date.now()
@@ -347,7 +352,8 @@ export const useGameStore = create<GameStore>()(
             teamBScore: isTeamA ? session.teamBScore : session.teamBScore + 1,
             currentTurn: {
               ...session.currentTurn,
-              correctCount: session.currentTurn.correctCount + 1
+              correctCount: session.currentTurn.correctCount + 1,
+              foundWords: [...session.currentTurn.foundWords, currentWord]
             },
             updatedAt: Date.now()
           }
@@ -399,6 +405,7 @@ export const useGameStore = create<GameStore>()(
             ...session,
             currentTeam: nextTeam,
             ...newPlayerIndex,
+            lastTurn: session.currentTurn,
             currentTurn: undefined,
             updatedAt: Date.now()
           }
@@ -436,9 +443,7 @@ export const useGameStore = create<GameStore>()(
               status: 'phase-summary',
               remainingWords: shuffledWords,
               guessedWords: [],
-              currentTeam: 'A',
-              teamAPlayerIndex: 0,
-              teamBPlayerIndex: 0,
+              // Keep currentTeam and player indices to continue turn order
               // Reset team scores for the new phase
               teamAScore: 0,
               teamBScore: 0,
@@ -456,6 +461,53 @@ export const useGameStore = create<GameStore>()(
 
       resetGame: () => {
         set({ session: null, currentPlayerId: null, isMultiplayerHost: false, hostPeerId: null });
+      },
+
+      reviewUncorrectWord: (word: string) => {
+        const { session } = get();
+        if (!session || !session.lastTurn) return;
+
+        const isTeamA = session.lastTurn.teamId === 'A';
+
+        set({
+          session: {
+            ...session,
+            remainingWords: [...session.remainingWords, word],
+            guessedWords: session.guessedWords.filter(w => w !== word),
+            teamAScore: isTeamA ? session.teamAScore - 1 : session.teamAScore,
+            teamBScore: isTeamA ? session.teamBScore : session.teamBScore - 1,
+            lastTurn: {
+              ...session.lastTurn,
+              foundWords: session.lastTurn.foundWords.filter(w => w !== word),
+              correctCount: session.lastTurn.correctCount - 1
+            },
+            updatedAt: Date.now()
+          }
+        });
+      },
+
+      reviewCorrectWord: (word: string) => {
+        const { session } = get();
+        if (!session || !session.lastTurn) return;
+
+        const isTeamA = session.lastTurn.teamId === 'A';
+
+        set({
+          session: {
+            ...session,
+            remainingWords: session.remainingWords.filter(w => w !== word),
+            guessedWords: [...session.guessedWords, word],
+            teamAScore: isTeamA ? session.teamAScore + 1 : session.teamAScore,
+            teamBScore: isTeamA ? session.teamBScore : session.teamBScore + 1,
+            lastTurn: {
+              ...session.lastTurn,
+              skippedWords: session.lastTurn.skippedWords.filter(w => w !== word),
+              foundWords: [...session.lastTurn.foundWords, word],
+              correctCount: session.lastTurn.correctCount + 1
+            },
+            updatedAt: Date.now()
+          }
+        });
       },
 
       getActivePlayer: () => {
