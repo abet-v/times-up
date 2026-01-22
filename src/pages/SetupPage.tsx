@@ -71,6 +71,13 @@ export function SetupPage() {
       return;
     }
 
+    // Easter egg: Greg sound
+    const nameLower = hostName.trim().toLowerCase();
+    if (nameLower === 'greg' || nameLower === 'gregoire' || nameLower === 'grégoire') {
+      const audio = new Audio('https://www.myinstants.com/media/sounds/ouais-cest-greg.mp3');
+      audio.play().catch(() => {});
+    }
+
     createSession(hostName.trim(), { wordsPerPlayer, roundDuration, phaseSettings });
 
     // Always enable multiplayer so QR code sharing is available

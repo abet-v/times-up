@@ -104,6 +104,13 @@ export function JoinPage() {
     }
     if (!connectionRef.current) return;
 
+    // Easter egg: Greg sound
+    const nameLower = name.trim().toLowerCase();
+    if (nameLower === 'greg' || nameLower === 'gregoire' || nameLower === 'grégoire') {
+      const audio = new Audio('https://www.myinstants.com/media/sounds/ouais-cest-greg.mp3');
+      audio.play().catch(() => {});
+    }
+
     const message: P2PMessage = {
       type: 'player-join',
       name: name.trim(),

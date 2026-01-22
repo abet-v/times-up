@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import { Button, Card, Avatar } from '../ui';
@@ -12,6 +13,14 @@ interface PreTurnViewProps {
 }
 
 export function PreTurnView({ session, activePlayer, playerIndex, onStart }: PreTurnViewProps) {
+  // Easter egg: Greg sound when it's Greg's turn
+  useEffect(() => {
+    const nameLower = activePlayer?.name.toLowerCase();
+    if (nameLower === 'greg' || nameLower === 'gregoire' || nameLower === 'grégoire') {
+      const audio = new Audio('https://www.myinstants.com/media/sounds/ouais-cest-greg.mp3');
+      audio.play().catch(() => {});
+    }
+  }, [activePlayer]);
   const isTeamA = session.currentTeam === 'A';
   const remainingCount = session.remainingWords.length;
 
