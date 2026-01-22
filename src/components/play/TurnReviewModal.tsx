@@ -29,7 +29,7 @@ export function TurnReviewModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Revoir le tour">
-      <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+      <div className="space-y-4">
         {/* Found Words Section */}
         {hasFoundWords && (
           <div>

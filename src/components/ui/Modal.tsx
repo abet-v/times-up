@@ -28,11 +28,11 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             initial={{ opacity: 0, scale: 0.9, y: 20, rotate: -2 }}
             animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 max-w-md mx-auto"
+            className="fixed inset-x-4 top-4 bottom-4 z-50 max-w-md mx-auto flex items-center"
           >
-            <div className="bg-white border-2 border-gray-700 rounded-lg p-6 shadow-[4px_4px_0_#374151]">
+            <div className="bg-white border-2 border-gray-700 rounded-lg p-6 shadow-[4px_4px_0_#374151] w-full max-h-full overflow-hidden flex flex-col">
               {title && (
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 flex-shrink-0">
                   <h2 className="text-xl font-bold text-gray-800 font-hand">{title}</h2>
                   <button
                     onClick={onClose}
@@ -42,7 +42,9 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                   </button>
                 </div>
               )}
-              {children}
+              <div className="overflow-y-auto flex-1 -mx-6 px-6 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+                {children}
+              </div>
             </div>
           </motion.div>
         </>
