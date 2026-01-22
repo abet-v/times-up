@@ -424,7 +424,9 @@ export function WordsPage() {
           <Button
             onClick={handleAddWord}
             disabled={!newWord.trim() || currentWords.length >= wordsPerPlayer}
-            className="shrink-0"
+            size="lg"
+            variant="danger"
+            className="shrink-0 text-2xl !px-8"
           >
             +
           </Button>
