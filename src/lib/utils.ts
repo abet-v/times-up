@@ -20,9 +20,9 @@ export const formatTime = (seconds: number): string => {
 export const getPhaseTitle = (phase: number): string => {
   switch (phase) {
     case 1:
-      return 'Free Description';
+      return 'Description libre';
     case 2:
-      return 'One Word';
+      return 'Un seul mot';
     case 3:
       return 'Mime';
     default:
@@ -33,11 +33,11 @@ export const getPhaseTitle = (phase: number): string => {
 export const getPhaseDescription = (phase: number): string => {
   switch (phase) {
     case 1:
-      return 'Describe the word without saying it!';
+      return 'Décris le mot sans le dire !';
     case 2:
-      return 'Give only ONE word as a clue!';
+      return 'Un seul mot pour faire deviner !';
     case 3:
-      return 'Act it out! No words allowed!';
+      return 'Mime le mot, pas de paroles !';
     default:
       return '';
   }

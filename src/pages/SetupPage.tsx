@@ -303,7 +303,7 @@ export function SetupPage() {
           <div>
             <label className="block text-lg font-bold text-[#2d2d2d] mb-3 font-hand flex items-center gap-2">
               <SkipForward className="w-5 h-5" />
-              Règles de Pass
+              Droit de passer
             </label>
             <div className="space-y-3">
               {([1, 2, 3] as const).map((phase) => {
@@ -328,26 +328,24 @@ export function SetupPage() {
                           ...prev,
                           [phase]: { ...prev[phase], enabled: !prev[phase].enabled }
                         }))}
-                        className={`
-                          px-3 py-1 border-2 font-hand text-sm font-bold
-                          transition-all duration-100
-                        `}
+                        className="relative w-14 h-8 border-[3px] border-[#2d2d2d] transition-colors duration-200"
                         style={{
-                          borderRadius: '20px 10px 20px 10px / 10px 20px 10px 20px',
-                          ...(settings.enabled
-                            ? {
-                                backgroundColor: '#22c55e',
-                                color: '#ffffff',
-                                borderColor: '#2d2d2d',
-                              }
-                            : {
-                                backgroundColor: '#e5e0d8',
-                                color: '#2d2d2d',
-                                borderColor: '#2d2d2d',
-                              }),
+                          borderRadius: '50px 45px 50px 45px / 45px 50px 45px 50px',
+                          boxShadow: '2px 2px 0px 0px rgba(45, 45, 45, 0.3)',
+                          backgroundColor: settings.enabled ? '#6b9e78' : '#ff4d4d',
                         }}
                       >
-                        {settings.enabled ? 'Oui' : 'Non'}
+                        <span
+                          className={`
+                            absolute top-0.5 w-5 h-5 bg-white border-2 border-[#2d2d2d]
+                            transition-all duration-200
+                            ${settings.enabled ? 'left-7' : 'left-1'}
+                          `}
+                          style={{
+                            borderRadius: '60% 40% 50% 50% / 50% 50% 40% 60%',
+                            boxShadow: '1px 1px 0px 0px rgba(45, 45, 45, 0.2)',
+                          }}
+                        />
                       </button>
                     </div>
                     {settings.enabled && (

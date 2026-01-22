@@ -111,6 +111,7 @@ export function TeamsPage() {
             variant="secondary"
             onClick={randomizeTeams}
             icon={<Dices className="w-5 h-5" />}
+            className="!px-10"
           >
             Mélanger au hasard
           </Button>
