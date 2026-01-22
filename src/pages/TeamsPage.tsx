@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import type { PanInfo } from 'framer-motion';
-import { Play, Dices } from 'lucide-react';
+import { Play, Dices, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button, Card, Avatar, BackButton } from '../components/ui';
 import { useGameStore } from '../store/gameStore';
 import { getTeamName } from '../lib/utils';
@@ -12,6 +12,64 @@ interface SwipeablePlayerCardProps {
   player: { id: string; name: string; team?: Team };
   index: number;
   onSwipe: (playerId: string, team: Team) => void;
+}
+
+// Player card in a team - can swipe/click to move to other team
+interface TeamPlayerCardProps {
+  player: { id: string; name: string; team?: Team };
+  index: number;
+  currentTeam: Team;
+  onSwitch: (playerId: string, newTeam: Team) => void;
+}
+
+function TeamPlayerCard({ player, index, currentTeam, onSwitch }: TeamPlayerCardProps) {
+  const [dragging, setDragging] = useState(false);
+  const otherTeam = currentTeam === 'A' ? 'B' : 'A';
+
+  const handleDragEnd = (_: unknown, info: PanInfo) => {
+    setDragging(false);
+    // Swipe left moves to A, swipe right moves to B
+    if (currentTeam === 'A' && info.offset.x > 50) {
+      onSwitch(player.id, 'B');
+    } else if (currentTeam === 'B' && info.offset.x < -50) {
+      onSwitch(player.id, 'A');
+    }
+  };
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, x: currentTeam === 'A' ? -20 : 20 }}
+      animate={{
+        opacity: 1,
+        x: 0,
+        backgroundColor: dragging
+          ? (currentTeam === 'A' ? '#fef9c3' : '#dbeafe')
+          : (currentTeam === 'A' ? '#eff6ff' : '#fefce8')
+      }}
+      exit={{ opacity: 0, scale: 0.8 }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.5}
+      onDragStart={() => setDragging(true)}
+      onDragEnd={handleDragEnd}
+      onClick={() => onSwitch(player.id, otherTeam)}
+      whileTap={{ scale: 0.95 }}
+      className={`
+        flex items-center gap-2 p-2 rounded-lg border cursor-pointer select-none touch-pan-y
+        ${currentTeam === 'A' ? 'border-blue-200' : 'border-yellow-200'}
+      `}
+    >
+      {currentTeam === 'B' && (
+        <ChevronLeft className="w-3 h-3 text-blue-400 flex-shrink-0" />
+      )}
+      <Avatar name={player.name} index={index} size="sm" />
+      <span className="text-sm text-gray-800 font-hand truncate flex-1">{player.name}</span>
+      {currentTeam === 'A' && (
+        <ChevronRight className="w-3 h-3 text-yellow-400 flex-shrink-0" />
+      )}
+    </motion.div>
+  );
 }
 
 function SwipeablePlayerCard({ player, index, onSwipe }: SwipeablePlayerCardProps) {
@@ -148,22 +206,20 @@ export function TeamsPage() {
               <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />
               <h2 className="font-bold text-sm font-hand text-blue-700">{getTeamName('A')}</h2>
             </div>
-            <div className="space-y-1.5 min-h-[100px]">
+            <div className="space-y-1.5 min-h-[100px] overflow-y-auto">
               {teamA.length === 0 ? (
                 <p className="text-gray-400 text-sm text-center py-4 font-hand">
                   Swipez vers la gauche
                 </p>
               ) : (
                 teamA.map((player) => (
-                  <motion.div
+                  <TeamPlayerCard
                     key={player.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg border border-blue-200"
-                  >
-                    <Avatar name={player.name} index={session.players.indexOf(player)} size="sm" />
-                    <span className="text-sm text-gray-800 font-hand truncate">{player.name}</span>
-                  </motion.div>
+                    player={player}
+                    index={session.players.indexOf(player)}
+                    currentTeam="A"
+                    onSwitch={handleSwipe}
+                  />
                 ))
               )}
             </div>
@@ -178,22 +234,20 @@ export function TeamsPage() {
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500" />
               <h2 className="font-bold text-sm font-hand text-yellow-700">{getTeamName('B')}</h2>
             </div>
-            <div className="space-y-1.5 min-h-[100px]">
+            <div className="space-y-1.5 min-h-[100px] overflow-y-auto">
               {teamB.length === 0 ? (
                 <p className="text-gray-400 text-sm text-center py-4 font-hand">
                   Swipez vers la droite
                 </p>
               ) : (
                 teamB.map((player) => (
-                  <motion.div
+                  <TeamPlayerCard
                     key={player.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 p-2 bg-yellow-50 rounded-lg border border-yellow-200"
-                  >
-                    <Avatar name={player.name} index={session.players.indexOf(player)} size="sm" />
-                    <span className="text-sm text-gray-800 font-hand truncate">{player.name}</span>
-                  </motion.div>
+                    player={player}
+                    index={session.players.indexOf(player)}
+                    currentTeam="B"
+                    onSwitch={handleSwipe}
+                  />
                 ))
               )}
             </div>

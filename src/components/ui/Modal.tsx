@@ -42,7 +42,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                   </button>
                 </div>
               )}
-              <div className="overflow-y-auto flex-1 -mx-6 px-6 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <div className="overflow-y-auto flex-1 -mx-6 px-6 pb-6 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
                 {children}
               </div>
             </div>

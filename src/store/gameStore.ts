@@ -479,6 +479,7 @@ export const useGameStore = create<GameStore>()(
             lastTurn: {
               ...session.lastTurn,
               foundWords: session.lastTurn.foundWords.filter(w => w !== word),
+              skippedWords: [...session.lastTurn.skippedWords, word],
               correctCount: session.lastTurn.correctCount - 1
             },
             updatedAt: Date.now()
