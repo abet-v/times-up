@@ -345,7 +345,7 @@ export function WordsPage() {
               {session.players.length >= 4 && (
                 <Button
                   fullWidth
-                  variant="secondary"
+                  variant="success"
                   onClick={handleGoToTeams}
                   icon={<Users className="w-5 h-5" />}
                 >
