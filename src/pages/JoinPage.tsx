@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wifi, WifiOff, Check, X, Loader2, Send, PartyPopper } from 'lucide-react';
+import { Wifi, WifiOff, Check, X, Loader2, Send, PartyPopper, Eye } from 'lucide-react';
 import Peer from 'peerjs';
 import type { DataConnection } from 'peerjs';
-import { Button, Input, Card } from '../components/ui';
+import { Button, Input, Card, Modal } from '../components/ui';
 import { peerServerConfig, type P2PMessage } from '../lib/peer';
 
 type ConnectionStatus = 'connecting' | 'connected' | 'entering' | 'done' | 'error';
@@ -17,6 +17,7 @@ export function JoinPage() {
   const [newWord, setNewWord] = useState('');
   const [error, setError] = useState('');
   const [wordsPerPlayer] = useState(5);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const peerRef = useRef<Peer | null>(null);
   const connectionRef = useRef<DataConnection | null>(null);
@@ -96,6 +97,13 @@ export function JoinPage() {
       wordInputRef.current?.focus();
     }
   }, [status]);
+
+  // Auto-show confirmation modal when all words are entered
+  useEffect(() => {
+    if (status === 'entering' && words.length >= wordsPerPlayer) {
+      setShowConfirmModal(true);
+    }
+  }, [status, words.length, wordsPerPlayer]);
 
   const handleSubmitName = () => {
     if (!name.trim()) {
@@ -374,23 +382,56 @@ export function JoinPage() {
           </AnimatePresence>
         </div>
 
-        {/* Submit Button */}
+        {/* Sticky Submit Button */}
         {words.length >= wordsPerPlayer && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-md mx-auto w-full mt-4"
+            className="sticky bottom-0 z-10 bg-[#fdfbf7] pt-3 pb-4 -mx-4 px-4"
           >
-            <Button
-              fullWidth
-              size="lg"
-              onClick={handleComplete}
-              icon={<Check className="w-5 h-5" />}
-            >
-              Valider mes mots
-            </Button>
+            <div className="max-w-md mx-auto w-full">
+              <Button
+                fullWidth
+                size="lg"
+                onClick={() => setShowConfirmModal(true)}
+                icon={<Check className="w-5 h-5" />}
+              >
+                Valider mes mots
+              </Button>
+            </div>
           </motion.div>
         )}
+
+        {/* Confirmation Modal */}
+        <Modal isOpen={showConfirmModal} onClose={() => setShowConfirmModal(false)} title="Tout est bon ?">
+          <div className="text-center space-y-4">
+            <p className="font-hand text-[#2d2d2d]/70 text-lg">
+              Tu as entré tes {wordsPerPlayer} mots !
+            </p>
+            <div className="space-y-3">
+              <Button
+                fullWidth
+                size="lg"
+                variant="success"
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  handleComplete();
+                }}
+                icon={<Check className="w-5 h-5" />}
+              >
+                C'est parti !
+              </Button>
+              <Button
+                fullWidth
+                variant="ghost"
+                onClick={() => setShowConfirmModal(false)}
+                icon={<Eye className="w-5 h-5" />}
+              >
+                Attends, je veux revoir
+              </Button>
+            </div>
+          </div>
+        </Modal>
       </div>
     );
   }
