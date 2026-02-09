@@ -319,9 +319,14 @@ export const useGameStore = create<GameStore>()(
           : session.teamBPlayerIndex;
         const activePlayer = teamPlayers[playerIndex % teamPlayers.length];
 
+        // Shuffle remaining words so the next player doesn't get the same
+        // unguessed word from the previous turn
+        const shuffledRemaining = shuffleArray([...session.remainingWords]);
+
         set({
           session: {
             ...session,
+            remainingWords: shuffledRemaining,
             currentTurn: {
               teamId: session.currentTeam,
               activePlayerId: activePlayer?.id || '',
