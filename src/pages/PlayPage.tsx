@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
+import { Users } from 'lucide-react';
 import { BackButton } from '../components/ui';
 import {
   CountdownOverlay,
@@ -9,7 +10,8 @@ import {
   PreTurnView,
   ActivePlayView,
   TurnReviewModal,
-  ScoreTransferOverlay
+  ScoreTransferOverlay,
+  TeamCompositionModal
 } from '../components/play';
 import { useGameStore } from '../store/gameStore';
 
@@ -19,6 +21,7 @@ export function PlayPage() {
   const navigate = useNavigate();
   const [subPhase, setSubPhase] = useState<PlaySubPhase>('pre-turn');
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
 
   const {
     session,
@@ -114,6 +117,23 @@ export function PlayPage() {
   return (
     <div className="min-h-screen relative">
       <BackButton className="absolute top-4 left-4 z-10" />
+
+      <button
+        onClick={() => setShowTeamModal(true)}
+        className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-white border-2 border-gray-700 text-gray-700 hover:bg-[#ff4d4d] hover:text-white active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all duration-100"
+        style={{
+          borderRadius: '255px 15px 225px 15px / 15px 225px 15px 255px',
+          boxShadow: '4px 4px 0 #374151',
+        }}
+        aria-label="Voir les équipes"
+      >
+        <Users className="w-5 h-5" strokeWidth={2.5} />
+      </button>
+
+      <TeamCompositionModal
+        isOpen={showTeamModal}
+        onClose={() => setShowTeamModal(false)}
+      />
 
       <AnimatePresence mode="wait">
         {subPhase === 'pre-turn' && (
